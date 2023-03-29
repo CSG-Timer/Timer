@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Timer</title>
+	<style>
+		body {
+			background-color: black;
+			color: purple;
+			font-size: 200px;
+			font-family: 'Quicksand', sans-serif;
+			text-align: center;
+			margin-top: 200px;
+		}
+		button {
+			font-size: 50px;
+			font-family: 'Quicksand', sans-serif;
+			background-color: purple;
+			color: white;
+			padding: 20px;
+			border-radius: 10px;
+			border: none;
+			margin: 20px;
+			cursor: pointer;
+		}
+	</style>
+	<link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+</head>
+<body>
+	<div id="timer"></div>
+	<button id="startButton" onclick="start()">Start</button>
+	<button onclick="stop()">Stop</button>
+	<script>
+		var timeLeft;
+		var timerId;
+		var startTime;
+
+		function startTimer(duration) {
+			var timer = document.getElementById("timer");
+			var minutes, seconds;
+
+			timerId = setInterval(function() {
+				var currentTime = Date.now();
+				var elapsedTime = (currentTime - startTime) / 1000;
+				duration = timeLeft - elapsedTime;
+
+				minutes = parseInt(duration / 60, 10);
+				seconds = parseInt(duration % 60, 10);
+
+				minutes = minutes < 10 ? "0" + minutes : minutes;
+				seconds = seconds < 10 ? "0" + seconds : seconds;
+
+				timer.textContent = minutes + ":" + seconds;
+
+				if (duration <= 0) {
+					clearInterval(timerId);
+				}
+			}, 1000);
+		}
+
+		function start() {
+			if (!timerId) {
+				if (timeLeft) {
+					startTime = Date.now();
+					startTimer(timeLeft);
+				}
+			}
+		}
+
+		function stop() {
+			clearInterval(timerId);
+			timerId = null;
+			document.getElementById("timer").textContent = getTimeString(timeLeft);
+		}
+
+		function getTimeString(seconds) {
+			var minutes = parseInt(seconds / 60, 10);
+			var seconds = parseInt(seconds % 60, 10);
+			minutes = minutes < 10 ? "0" + minutes : minutes;
+			seconds = seconds < 10 ? "0" + seconds : seconds;
+			return minutes + ":" + seconds;
+		}
+
+		document.addEventListener("DOMContentLoaded", function() {
+			document.getElementById("timer").style.color = "purple";
+
+			document.getElementById("timer").addEventListener("click", function() {
+				if (!timerId) {
+					startTimer(timeLeft);
+				}
+			});
+
+			document.getElementById("button90").addEventListener("click", function() {
+				timeLeft = 90 * 60;
+				document.getElementById("timer").textContent = "90:00";
+				startPause();
+			});
+
+			document.getElementById("button45").addEventListener("click", function() {
+				timeLeft = 45 * 60;
+				document.getElementById("timer").textContent = "45:00";
+				startPause();
+			});
+
+			document.getElementById("button15").addEventListener("click", function() {
+				timeLeft = 15 * 60;
+				document.getElementById("timer").textContent = "15:00";
+				startPause();
+			});
+
+			document.getElementById("button10").addEventListener("click", function() {
+				timeLeft = 10 * 60;
+				document.getElementById("timer").textContent = "10:00";
+				startPause();
+			});
+		});
+	</script>
+  <button id="button90">90 min</button>
+	<button id="button45">45 min</button>
+	<button id="button15">15 min</button>
+	<button id="button10">10 min</button>
+</body>
+</html>
