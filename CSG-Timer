@@ -1,122 +1,215 @@
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
-	<title>Timer</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Toets Upload Portal</title>
+	<link href="https://fonts.googleapis.com/css?family=Quicksand:400,600&display=swap" rel="stylesheet">
 	<style>
+		:root {
+			--primary: #6a0dad;
+			--bg: #f4f0fa;
+			--text: #251432;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
 		body {
-			background-color: black;
-			color: purple;
-			font-size: 200px;
+			margin: 0;
 			font-family: 'Quicksand', sans-serif;
-			text-align: center;
-			margin-top: 200px;
+			background: var(--bg);
+			color: var(--text);
+			min-height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 24px;
 		}
-		button {
-			font-size: 50px;
-			font-family: 'Quicksand', sans-serif;
-			background-color: purple;
-			color: white;
-			padding: 20px;
+
+		.container {
+			width: 100%;
+			max-width: 620px;
+			background: #fff;
+			border-radius: 16px;
+			padding: 28px;
+			box-shadow: 0 16px 40px rgba(61, 24, 90, 0.18);
+		}
+
+		h1 {
+			margin-top: 0;
+			margin-bottom: 6px;
+			color: var(--primary);
+			font-size: 30px;
+		}
+
+		.subtitle {
+			margin-top: 0;
+			margin-bottom: 20px;
+		}
+
+		label {
+			display: block;
+			font-weight: 600;
+			margin-bottom: 8px;
+		}
+
+		input {
+			width: 100%;
+			padding: 11px 12px;
 			border-radius: 10px;
-			border: none;
-			margin: 20px;
+			border: 1px solid #c3acd7;
+			font-size: 16px;
+			font-family: inherit;
+			margin-bottom: 18px;
+		}
+
+		.row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 14px;
+		}
+
+		.actions {
+			display: flex;
+			gap: 10px;
+			flex-wrap: wrap;
+			margin-top: 8px;
+		}
+
+		button {
 			cursor: pointer;
-		}
-	</style>
-	<link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
-</head>
-<body>
-	<div id="timer"></div>
-	<button id="startButton" onclick="start()">Start</button>
-	<button onclick="stop()">Stop</button>
-	<script>
-		var timeLeft;
-		var timerId;
-		var startTime;
-
-		function startTimer(duration) {
-			var timer = document.getElementById("timer");
-			var minutes, seconds;
-
-			timerId = setInterval(function() {
-				var currentTime = Date.now();
-				var elapsedTime = (currentTime - startTime) / 1000;
-				duration = timeLeft - elapsedTime;
-
-				minutes = parseInt(duration / 60, 10);
-				seconds = parseInt(duration % 60, 10);
-
-				minutes = minutes < 10 ? "0" + minutes : minutes;
-				seconds = seconds < 10 ? "0" + seconds : seconds;
-
-				timer.textContent = minutes + ":" + seconds;
-
-				if (duration <= 0) {
-					clearInterval(timerId);
-				}
-			}, 1000);
+			border: none;
+			border-radius: 10px;
+			padding: 12px 18px;
+			font-size: 16px;
+			font-weight: 600;
+			font-family: inherit;
 		}
 
-		function start() {
-			if (!timerId) {
-				if (timeLeft) {
-					startTime = Date.now();
-					startTimer(timeLeft);
-				}
+		.btn-primary {
+			background: var(--primary);
+			color: #fff;
+		}
+
+		.btn-secondary {
+			background: #e7d7f6;
+			color: #3e1d52;
+		}
+
+		.output {
+			margin-top: 22px;
+			background: #f7f2fd;
+			border: 1px solid #dac3ef;
+			padding: 16px;
+			border-radius: 10px;
+		}
+
+		.output code {
+			background: #efe2fb;
+			padding: 2px 7px;
+			border-radius: 6px;
+		}
+
+		.note {
+			font-size: 14px;
+		}
+
+		@media (max-width: 640px) {
+			.row {
+				grid-template-columns: 1fr;
 			}
 		}
+	</style>
+</head>
+<body>
+	<main class="container">
+		<h1>Toets Upload Portal</h1>
+		<p class="subtitle">Vul de gegevens in, upload de toets en genereer automatisch een wachtwoord + e-mailvoorstel.</p>
 
-		function stop() {
-			clearInterval(timerId);
-			timerId = null;
-			document.getElementById("timer").textContent = getTimeString(timeLeft);
+		<form id="toetsForm">
+			<label for="naam">Naam leerling</label>
+			<input id="naam" name="naam" type="text" required>
+
+			<div class="row">
+				<div>
+					<label for="klas">Klas</label>
+					<input id="klas" name="klas" type="text" required>
+				</div>
+				<div>
+					<label for="toetsdatum">Toetsdatum</label>
+					<input id="toetsdatum" name="toetsdatum" type="date" required>
+				</div>
+			</div>
+
+			<label for="toetsBestand">Toets uploaden</label>
+			<input id="toetsBestand" name="toetsBestand" type="file" required>
+
+			<div class="actions">
+				<button type="button" class="btn-primary" id="genereerBtn">Genereer wachtwoord + mail</button>
+				<button type="reset" class="btn-secondary">Leegmaken</button>
+			</div>
+		</form>
+
+		<section class="output" id="output" hidden>
+			<p><strong>Gegenereerd wachtwoord:</strong> <code id="wachtwoord"></code></p>
+			<p><strong>Bestand:</strong> <span id="bestandNaam"></span></p>
+			<p class="note">Klik op onderstaande knop om een e-mail te openen naar <strong>d.plas@atlascollege.nl</strong> met alle gegevens.</p>
+			<button type="button" class="btn-primary" id="mailBtn">Open e-mailconcept</button>
+		</section>
+	</main>
+
+	<script>
+		function maakWachtwoord() {
+			const simpeleWoorden = [
+				'banaan',
+				'zonnebril',
+				'fiets',
+				'appel',
+				'klaslokaal',
+				'boekentas',
+				'potlood',
+				'regenjas',
+				'koffie',
+				'schrift'
+			];
+			const index = Math.floor(Math.random() * simpeleWoorden.length);
+			return simpeleWoorden[index];
 		}
 
-		function getTimeString(seconds) {
-			var minutes = parseInt(seconds / 60, 10);
-			var seconds = parseInt(seconds % 60, 10);
-			minutes = minutes < 10 ? "0" + minutes : minutes;
-			seconds = seconds < 10 ? "0" + seconds : seconds;
-			return minutes + ":" + seconds;
-		}
+		document.getElementById('genereerBtn').addEventListener('click', function () {
+			const form = document.getElementById('toetsForm');
+			if (!form.reportValidity()) {
+				return;
+			}
 
-		document.addEventListener("DOMContentLoaded", function() {
-			document.getElementById("timer").style.color = "purple";
+			const naam = document.getElementById('naam').value.trim();
+			const klas = document.getElementById('klas').value.trim();
+			const toetsdatum = document.getElementById('toetsdatum').value;
+			const toetsBestand = document.getElementById('toetsBestand').files[0];
+			const wachtwoord = maakWachtwoord();
 
-			document.getElementById("timer").addEventListener("click", function() {
-				if (!timerId) {
-					startTimer(timeLeft);
-				}
-			});
+			document.getElementById('wachtwoord').textContent = wachtwoord;
+			document.getElementById('bestandNaam').textContent = toetsBestand ? toetsBestand.name : 'Geen bestand';
+			document.getElementById('output').hidden = false;
 
-			document.getElementById("button90").addEventListener("click", function() {
-				timeLeft = 90 * 60;
-				document.getElementById("timer").textContent = "90:00";
-				startPause();
-			});
+			const onderwerp = encodeURIComponent('Toets upload - ' + naam + ' (' + klas + ')');
+			const bodyRegels = [
+				'Naam leerling: ' + naam,
+				'Klas: ' + klas,
+				'Toetsdatum: ' + toetsdatum,
+				'Bestandsnaam: ' + (toetsBestand ? toetsBestand.name : 'Geen bestand'),
+				'Gegenereerd wachtwoord: ' + wachtwoord,
+				'',
+				'Let op: voeg het geuploade bestand handmatig toe als bijlage in de e-mailclient.'
+			];
+			const body = encodeURIComponent(bodyRegels.join('\n'));
 
-			document.getElementById("button45").addEventListener("click", function() {
-				timeLeft = 45 * 60;
-				document.getElementById("timer").textContent = "45:00";
-				startPause();
-			});
-
-			document.getElementById("button15").addEventListener("click", function() {
-				timeLeft = 15 * 60;
-				document.getElementById("timer").textContent = "15:00";
-				startPause();
-			});
-
-			document.getElementById("button10").addEventListener("click", function() {
-				timeLeft = 10 * 60;
-				document.getElementById("timer").textContent = "10:00";
-				startPause();
-			});
+			document.getElementById('mailBtn').onclick = function () {
+				window.location.href = 'mailto:d.plas@atlascollege.nl?subject=' + onderwerp + '&body=' + body;
+			};
 		});
 	</script>
-  <button id="button90">90 min</button>
-	<button id="button45">45 min</button>
-	<button id="button15">15 min</button>
-	<button id="button10">10 min</button>
 </body>
 </html>
